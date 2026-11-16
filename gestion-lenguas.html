@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Gestión - 68 Lenguas de México</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { dark: '#0A192F', card: '#112240', accent: '#FDCB6E', teal: '#64FFDA', slate: '#8892B0', light: '#E6F1FF' },
+                        region: { norte: '#ef4444', centro: '#3b82f6', pacifico: '#10b981', sureste: '#f59e0b' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0A192F;
+            color: #E6F1FF;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0A192F;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #233554;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64FFDA;
+        }
+
+        .data-row:hover {
+            background-color: #112240;
+        }
+
+        .input-field {
+            background-color: #0A192F;
+            border: 1px solid #233554;
+            color: #E6F1FF;
+        }
+
+        .input-field:focus {
+            border-color: #64FFDA;
+            outline: none;
+        }
+
+        .rich-text {
+            min-height: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+            outline: none;
+            line-height: 1.6;
+        }
+
+        .rich-text h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #FDCB6E;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid #233554;
+            padding-bottom: 0.25rem;
+        }
+
+        .rich-text h3 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #64FFDA;
+            margin-top: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .rich-text p {
+            margin-bottom: 0.75rem;
+        }
+
+        .rich-text ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .rich-text li {
+            margin-bottom: 0.25rem;
+        }
+
+        .rich-text a {
+            color: #64FFDA;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body class="h-full flex flex-col overflow-hidden bg-brand-dark">
+
+    <!-- Header -->
+    <header
+        class="bg-brand-card border-b border-gray-800 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shrink-0 z-20">
+        <div class="flex items-center space-x-3">
+            <div
+                class="w-10 h-10 rounded-xl bg-brand-teal/10 border border-brand-teal/30 flex items-center justify-center text-brand-teal text-xl shadow-lg">
+                <i class="fa-solid fa-database"></i>
+            </div>
+            <div>
+                <h1 class="text-base sm:text-lg font-bold text-white tracking-wide">Panel de Gestión de Datos</h1>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="openTextsModal()"
+                class="px-3 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-300 text-xs font-semibold flex items-center gap-2 transition">
+                <i class="fa-solid fa-file-pen"></i><span>Editar Textos</span>
+            </button>
+            <a href="index.html"
+                class="px-3 py-1.5 rounded-lg bg-gray-500/10 hover:bg-gray-500/20 border border-gray-500/30 text-gray-300 text-xs font-semibold flex items-center gap-2 transition">
+                <i class="fa-solid fa-map"></i><span>Volver al Mapa</span>
+            </a>
+            <button onclick="exportData()"
+                class="px-3 py-1.5 rounded-lg bg-brand-teal/10 hover:bg-brand-teal/20 border border-brand-teal/30 text-brand-teal text-xs font-semibold flex items-center gap-2 transition">
+                <i class="fa-solid fa-download"></i><span>Exportar JSON</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col p-4 gap-4 overflow-hidden">
+
+        <!-- Toolbar -->
+        <div
+            class="bg-brand-card/95 backdrop-blur border border-gray-800 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 shrink-0">
+            <div class="relative flex-1 min-w-[200px]">
+                <i
+                    class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                <input type="text" id="searchInput" placeholder="Buscar por nombre, familia..."
+                    class="w-full bg-brand-dark border border-gray-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-teal transition">
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+                <button onclick="triggerJsonUpload()"
+                    class="px-4 py-2 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-300 text-sm font-semibold flex items-center gap-2 transition">
+                    <i class="fa-solid fa-upload"></i><span>Importar JSON</span>
+                </button>
+                <input type="file" id="jsonFileInput" accept=".json" class="hidden" onchange="handleJsonUpload(event)">
+                <button onclick="addNewEntry()"
+                    class="px-4 py-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 text-green-300 text-sm font-semibold flex items-center gap-2 transition">
+                    <i class="fa-solid fa-plus"></i><span>Añadir Lengua</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabla Completa -->
+        <div
+            class="flex-1 bg-brand-card/95 backdrop-blur border border-gray-800 rounded-xl overflow-hidden flex flex-col">
+            <div class="overflow-auto flex-1">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-brand-dark sticky top-0 z-10">
+                        <tr>
+                            <th class="px-3 py-2 text-[10px] font-semibold text-brand-slate uppercase tracking-wider">#
+                            </th>
+                            <th class="px-3 py-2 text-[10px] font-semibold text-brand-slate uppercase tracking-wider">
+                                Nombre</th>
+                            <th class="px-3 py-2 text-[10px] font-semibold text-brand-slate uppercase tracking-wider">
+                                Familia</th>
+                            <th class="px-3 py-2 text-[10px] font-semibold text-brand-slate uppercase tracking-wider">
+                                Agrupación</th>
+                            <th class="px-3 py-2 text-[10px] font-semibold text-brand-slate uppercase tracking-wider">
+                                Variante</th>
+                            <th class="px-3 py-2 text-[10px] font-semibold text-brand-slate uppercase tracking-wider">
+                                Coordenadas</th>
+                            <th class="px-3 py-2 text-[10px] font-semibold text-brand-slate uppercase tracking-wider">
+                                Región</th>
+                            <th class="px-3 py-2 text-[10px] font-semibold text-brand-slate uppercase tracking-wider">
+                                Multimedia</th>
+                            <th
+                                class="px-3 py-2 text-[10px] font-semibold text-brand-slate uppercase tracking-wider text-right">
+                                Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody" class="divide-y divide-gray-800/50"></tbody>
+                </table>
+            </div>
+            <div
+                class="p-2 border-t border-gray-800 bg-brand-dark/50 text-[10px] text-brand-slate flex justify-between items-center">
+                <span>Mostrando <span id="visibleCount">0</span> de <span id="totalRecords">0</span> registros</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR TEXTOS -->
+    <div id="textsModal"
+        class="fixed inset-0 z-[1000] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div
+            class="bg-brand-card border border-purple-500/30 rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-purple-950/20">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-8 h-8 rounded-lg bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400">
+                        <i class="fa-solid fa-file-pen"></i>
+                    </div>
+                    <h2 class="text-base font-bold text-white">Editar Textos Informativos</h2>
+                </div>
+                <button onclick="closeTextsModal()" class="text-gray-400 hover:text-white"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto space-y-8 flex-1">
+                <div>
+                    <label class="block text-sm font-bold text-amber-400 mb-2">Contenido de "Estudios de Caso"</label>
+                    <div class="border border-gray-700 rounded-lg overflow-hidden flex flex-col">
+                        <div class="bg-brand-dark p-1 flex gap-1 border-b border-gray-700">
+                            <button onclick="formatDoc('formatBlock', 'H2')"
+                                class="px-2 py-1 text-xs hover:bg-gray-700 rounded text-white">H2</button>
+                            <button onclick="formatDoc('formatBlock', 'H3')"
+                                class="px-2 py-1 text-xs hover:bg-gray-700 rounded text-white">H3</button>
+                            <button onclick="formatDoc('formatBlock', 'P')"
+                                class="px-2 py-1 text-xs hover:bg-gray-700 rounded text-white">P</button>
+                            <div class="w-px h-5 bg-gray-600 mx-1"></div>
+                            <button onclick="formatDoc('bold')"
+                                class="px-2 py-1 text-xs hover:bg-gray-700 rounded text-white font-bold">B</button>
+                            <button onclick="formatDoc('insertUnorderedList')"
+                                class="px-2 py-1 text-xs hover:bg-gray-700 rounded text-white"><i
+                                    class="fa-solid fa-list-ul"></i></button>
+                            <div class="w-px h-5 bg-gray-600 mx-1"></div>
+                            <button onclick="addLink()"
+                                class="px-2 py-1 text-xs hover:bg-gray-700 rounded text-brand-teal"><i
+                                    class="fa-solid fa-link"></i> Link</button>
+                            <button onclick="addYouTube()"
+                                class="px-2 py-1 text-xs hover:bg-gray-700 rounded text-red-400"><i
+                                    class="fa-brands fa-youtube"></i> Insertar YouTube</button>
+                        </div>
+                        <div id="editorCase" contenteditable="true"
+                            class="rich-text p-3 text-sm text-gray-300 bg-brand-dark"></div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-brand-teal mb-2">Contenido de "Reflexión
+                        Pedagógica"</label>
+                    <div class="border border-gray-700 rounded-lg overflow-hidden flex flex-col">
+                        <div class="bg-brand-dark p-1 flex gap-1 border-b border-gray-700">
+                            <button onclick="formatDoc('formatBlock', 'H2')"
+                                class="px-2 py-1 text-xs hover:bg-gray-700 rounded text-white">H2</button>
+                            <button onclick="formatDoc('formatBlock', 'H3')"
+                                class="px-2 py-1 text-xs hover:bg-gray-700 rounded text-white">H3</button>
+                            <button onclick="formatDoc('formatBlock', 'P')"
+                                class="px-2 py-1 text-xs hover:bg-gray-700 rounded text-white">P</button>
+                            <div class="w-px h-5 bg-gray-600 mx-1"></div>
+                            <button onclick="formatDoc('bold')"
+                                class="px-2 py-1 text-xs hover:bg-gray-700 rounded text-white font-bold">B</button>
+                            <button onclick="formatDoc('insertUnorderedList')"
+                                class="px-2 py-1 text-xs hover:bg-gray-700 rounded text-white"><i
+                                    class="fa-solid fa-list-ul"></i></button>
+                            <div class="w-px h-5 bg-gray-600 mx-1"></div>
+                            <button onclick="addLink()"
+                                class="px-2 py-1 text-xs hover:bg-gray-700 rounded text-brand-teal"><i
+                                    class="fa-solid fa-link"></i> Link</button>
+                            <button onclick="addYouTube()"
+                                class="px-2 py-1 text-xs hover:bg-gray-700 rounded text-red-400"><i
+                                    class="fa-brands fa-youtube"></i> Insertar YouTube</button>
+                        </div>
+                        <div id="editorReflection" contenteditable="true"
+                            class="rich-text p-3 text-sm text-gray-300 bg-brand-dark"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-800 bg-brand-dark flex justify-end gap-2">
+                <button onclick="closeTextsModal()"
+                    class="px-4 py-2 rounded-lg bg-gray-700 text-white font-bold text-xs hover:bg-gray-600 transition">Cancelar</button>
+                <button onclick="saveTexts()"
+                    class="px-5 py-2 rounded-xl bg-purple-500 text-white font-bold text-xs hover:bg-purple-400 transition">Guardar
+                    Textos</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR LENGUA (Restaurado) -->
+    <div id="editModal"
+        class="fixed inset-0 z-[1000] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div
+            class="bg-brand-card border border-gray-700 rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            <div class="p-4 border-b border-gray-800 flex justify-between items-center">
+                <h2 class="text-base font-bold text-white" id="modalTitle">Editar Lengua</h2>
+                <button onclick="closeEditModal()"
+                    class="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white flex items-center justify-center transition"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto space-y-4 flex-1">
+                <input type="hidden" id="editId">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-semibold text-brand-slate mb-1">Nombre</label><input
+                            type="text" id="editName" class="input-field w-full rounded-lg px-3 py-2 text-sm"></div>
+                    <div><label class="block text-xs font-semibold text-brand-slate mb-1">Región</label><select
+                            id="editRegion" class="input-field w-full rounded-lg px-3 py-2 text-sm">
+                            <option value="Norte">Norte</option>
+                            <option value="Centro">Centro</option>
+                            <option value="Pacífico">Pacífico</option>
+                            <option value="Sureste">Sureste</option>
+                        </select></div>
+                    <div><label class="block text-xs font-semibold text-brand-slate mb-1">Familia
+                            Lingüística</label><input type="text" id="editFamily"
+                            class="input-field w-full rounded-lg px-3 py-2 text-sm"></div>
+                    <div><label class="block text-xs font-semibold text-brand-slate mb-1">Agrupación</label><input
+                            type="text" id="editGroup" class="input-field w-full rounded-lg px-3 py-2 text-sm"></div>
+                    <div class="sm:col-span-2"><label class="block text-xs font-semibold text-brand-slate mb-1">Variante
+                            Lingüística</label><input type="text" id="editVariant"
+                            class="input-field w-full rounded-lg px-3 py-2 text-sm"></div>
+                    <div class="sm:col-span-2"><label class="block text-xs font-semibold text-brand-slate mb-1">Estado /
+                            Presencia</label><input type="text" id="editState"
+                            class="input-field w-full rounded-lg px-3 py-2 text-sm"></div>
+                    <div><label class="block text-xs font-semibold text-brand-slate mb-1">Latitud</label><input
+                            type="number" step="0.0001" id="editLat"
+                            class="input-field w-full rounded-lg px-3 py-2 text-sm"></div>
+                    <div><label class="block text-xs font-semibold text-brand-slate mb-1">Longitud</label><input
+                            type="number" step="0.0001" id="editLng"
+                            class="input-field w-full rounded-lg px-3 py-2 text-sm"></div>
+
+                    <div class="sm:col-span-2 border-t border-gray-800 pt-3 mt-2">
+                        <h3 class="text-sm font-bold text-brand-teal mb-2"><i class="fa-solid fa-photo-film"></i>
+                            Configuración de Video</h3>
+                    </div>
+                    <div><label class="block text-xs font-semibold text-brand-slate mb-1">Tipo de
+                            Multimedia</label><select id="editMediaType"
+                            class="input-field w-full rounded-lg px-3 py-2 text-sm">
+                            <option value="external">Link Externo</option>
+                            <option value="mp4">MP4 Local</option>
+                            <option value="youtube">Video de YouTube</option>
+                        </select></div>
+                    <div><label class="block text-xs font-semibold text-brand-slate mb-1">Ruta o URL</label><input
+                            type="text" id="editMediaUrl" class="input-field w-full rounded-lg px-3 py-2 text-sm"
+                            placeholder="Ej: Videos/1_Akateko.mp4"></div>
+                    <div class="sm:col-span-2"><label class="block text-xs font-semibold text-brand-slate mb-1">URL
+                            Original (68 Voces / Facebook)</label><input type="url" id="editAudioUrl"
+                            class="input-field w-full rounded-lg px-3 py-2 text-sm"></div>
+                    <div class="sm:col-span-2"><label
+                            class="block text-xs font-semibold text-brand-slate mb-1">Descripción</label><textarea
+                            id="editDesc" rows="2" class="input-field w-full rounded-lg px-3 py-2 text-sm"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-800 bg-brand-dark flex justify-end gap-2">
+                <button onclick="closeEditModal()"
+                    class="px-4 py-2 rounded-lg bg-gray-700 text-white font-bold text-xs hover:bg-gray-600 transition">Cancelar</button>
+                <button onclick="saveEntry()"
+                    class="px-5 py-2 rounded-xl bg-brand-teal text-brand-dark font-bold text-xs hover:bg-teal-300 transition">Guardar
+                    Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentData = [];
+        let editingId = null;
+        let textsData = { caseStudies: "", reflection: "" };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            renderTable();
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+        });
+
+        function loadData() {
+            const stored = localStorage.getItem('lenguasData');
+            if (stored) { try { currentData = JSON.parse(stored); } catch (e) { currentData = []; } }
+
+            const storedTexts = localStorage.getItem('textosData');
+            if (storedTexts) {
+                try { textsData = JSON.parse(storedTexts); } catch (e) { textsData = { caseStudies: "", reflection: "" }; }
+            }
+        }
+
+        function saveData() { localStorage.setItem('lenguasData', JSON.stringify(currentData)); }
+        function saveTextsData() { localStorage.setItem('textosData', JSON.stringify(textsData)); }
+
+        // ============================================
+        // EDITOR DE TEXTOS
+        // ============================================
+        function openTextsModal() {
+            document.getElementById('editorCase').innerHTML = textsData.caseStudies || "";
+            document.getElementById('editorReflection').innerHTML = textsData.reflection || "";
+            document.getElementById('textsModal').classList.remove('hidden');
+        }
+        function closeTextsModal() { document.getElementById('textsModal').classList.add('hidden'); }
+
+        function saveTexts() {
+            textsData.caseStudies = document.getElementById('editorCase').innerHTML;
+            textsData.reflection = document.getElementById('editorReflection').innerHTML;
+            saveTextsData();
+            closeTextsModal();
+            alert("Textos guardados correctamente. Se verán reflejados en el mapa.");
+        }
+
+        function formatDoc(cmd, value = null) { document.execCommand(cmd, false, value); }
+        function addLink() { const url = prompt("Ingresa la URL del enlace:"); if (url) document.execCommand('createLink', false, url); }
+        function addYouTube() { const url = prompt("Pega el enlace de YouTube:"); if (url) document.execCommand('insertHTML', false, `<p>${url}</p>`); }
+
+        // ============================================
+        // IMPORTAR / EXPORTAR
+        // ============================================
+        function triggerJsonUpload() { document.getElementById('jsonFileInput').click(); }
+
+        function handleJsonUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    let importedLenguas = [];
+                    let importedTexts = null;
+
+                    if (parsed._texts) {
+                        importedLenguas = parsed.lenguas || [];
+                        importedTexts = parsed._texts;
+                    } else if (Array.isArray(parsed)) {
+                        importedLenguas = parsed;
+                    }
+
+                    const normalized = importedLenguas.map((item, index) => ({
+                        id: item.id || (index + 1), name: String(item.name), region: item.region || 'Centro',
+                        family: item.family || '', group: item.group || item.name || '', variant: item.variant || '',
+                        state: item.state || '', coords: [Number(item.coords[0]), Number(item.coords[1])],
+                        audioUrl: item.audioUrl || '', mediaUrl: item.mediaUrl || '', mediaType: item.mediaType || 'external', desc: item.desc || ''
+                    }));
+
+                    if (currentData.length > 0 && !confirm(`¿Reemplazar registros actuales?`)) return;
+
+                    currentData = normalized;
+                    saveData();
+
+                    if (importedTexts) { textsData = importedTexts; saveTextsData(); }
+
+                    renderTable(); applyFilters();
+                    alert(`✅ Importación exitosa.`);
+                } catch (err) { alert(`❌ Error: ${err.message}`); }
+                finally { event.target.value = ''; }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportData() {
+            const exportObject = { _texts: textsData, lenguas: currentData };
+            const dataStr = JSON.stringify(exportObject, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'base_datos_lenguas.json'; a.click(); URL.revokeObjectURL(url);
+        }
+
+        // ============================================
+        // TABLA
+        // ============================================
+        function renderTable(filteredData = null) {
+            const data = filteredData || currentData;
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '';
+            const regionColors = { 'Norte': 'bg-region-norte', 'Centro': 'bg-region-centro', 'Pacífico': 'bg-region-pacifico', 'Sureste': 'bg-region-sureste' };
+
+            data.forEach((item, index) => {
+                // Lógica visual para la columna "Multimedia" (Reemplaza a "Link")
+                let mediaBadge = '';
+                if (item.mediaType === 'mp4' && item.mediaUrl) {
+                    mediaBadge = `<span class="px-2 py-0.5 rounded bg-green-500/20 text-green-300 text-[10px] font-bold border border-green-500/30"><i class="fa-solid fa-hard-drive mr-1"></i> MP4 Local</span>`;
+                } else if (item.mediaType === 'youtube' || (item.audioUrl && item.audioUrl.includes('youtu'))) {
+                    mediaBadge = `<span class="px-2 py-0.5 rounded bg-red-500/20 text-red-300 text-[10px] font-bold border border-red-500/30"><i class="fa-brands fa-youtube mr-1"></i> YouTube</span>`;
+                } else {
+                    mediaBadge = `<span class="px-2 py-0.5 rounded bg-gray-700/50 text-gray-400 text-[10px] font-bold border border-gray-600"><i class="fa-solid fa-link mr-1"></i> Externo</span>`;
+                }
+
+                const row = document.createElement('tr');
+                row.className = 'data-row transition cursor-pointer';
+                row.onclick = (e) => { if (!e.target.closest('button')) openEditModal(item.id); };
+                row.innerHTML = `
+                    <td class="px-3 py-2 text-gray-500 text-xs">${index + 1}</td>
+                    <td class="px-3 py-2 font-semibold text-white">${item.name}</td>
+                    <td class="px-3 py-2 text-gray-300 text-xs">${item.family}</td>
+                    <td class="px-3 py-2 text-gray-300 text-xs">${item.group}</td>
+                    <td class="px-3 py-2 text-gray-400 text-xs max-w-[150px] truncate" title="${item.variant}">${item.variant}</td>
+                    <td class="px-3 py-2 text-gray-400 text-xs font-mono">${item.coords[0].toFixed(3)}, ${item.coords[1].toFixed(3)}</td>
+                    <td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold text-white ${regionColors[item.region] || 'bg-gray-600'}">${item.region}</span></td>
+                    <td class="px-3 py-2 text-xs">${mediaBadge}</td>
+                    <td class="px-3 py-2 text-right">
+                        <button onclick="event.stopPropagation(); openEditModal(${item.id})" class="text-blue-400 hover:text-blue-300 p-1"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="event.stopPropagation(); deleteEntry(${item.id})" class="text-red-400 hover:text-red-300 p-1 ml-1"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('totalRecords').textContent = currentData.length;
+            document.getElementById('visibleCount').textContent = data.length;
+        }
+
+        function applyFilters() {
+            const term = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filtered = currentData.filter(item =>
+                item.name.toLowerCase().includes(term) ||
+                item.family.toLowerCase().includes(term) ||
+                item.variant.toLowerCase().includes(term)
+            );
+            renderTable(filtered);
+        }
+
+        // ============================================
+        // EDITAR / AÑADIR / ELIMINAR LENGUAS
+        // ============================================
+        function openEditModal(id) {
+            const item = currentData.find(l => l.id === id);
+            if (!item) return;
+            editingId = id;
+            document.getElementById('modalTitle').textContent = 'Editar: ' + item.name;
+            document.getElementById('editName').value = item.name;
+            document.getElementById('editRegion').value = item.region;
+            document.getElementById('editFamily').value = item.family;
+            document.getElementById('editGroup').value = item.group;
+            document.getElementById('editVariant').value = item.variant;
+            document.getElementById('editState').value = item.state;
+            document.getElementById('editLat').value = item.coords[0];
+            document.getElementById('editLng').value = item.coords[1];
+            document.getElementById('editAudioUrl').value = item.audioUrl;
+            document.getElementById('editMediaType').value = item.mediaType || 'external';
+            document.getElementById('editMediaUrl').value = item.mediaUrl || '';
+            document.getElementById('editDesc').value = item.desc;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() { document.getElementById('editModal').classList.add('hidden'); editingId = null; }
+
+        function saveEntry() {
+            if (!editingId) return;
+            const item = currentData.find(l => l.id === editingId);
+            if (!item) return;
+
+            item.name = document.getElementById('editName').value.trim();
+            item.region = document.getElementById('editRegion').value;
+            item.family = document.getElementById('editFamily').value.trim();
+            item.group = document.getElementById('editGroup').value.trim();
+            item.variant = document.getElementById('editVariant').value.trim();
+            item.state = document.getElementById('editState').value.trim();
+            const lat = parseFloat(document.getElementById('editLat').value);
+            const lng = parseFloat(document.getElementById('editLng').value);
+            if (!isNaN(lat) && !isNaN(lng)) item.coords = [lat, lng];
+            item.audioUrl = document.getElementById('editAudioUrl').value.trim();
+            item.mediaType = document.getElementById('editMediaType').value;
+            item.mediaUrl = document.getElementById('editMediaUrl').value.trim();
+            item.desc = document.getElementById('editDesc').value.trim();
+
+            saveData(); renderTable(); closeEditModal(); applyFilters();
+        }
+
+        function addNewEntry() {
+            const newId = currentData.length > 0 ? Math.max(...currentData.map(l => l.id)) + 1 : 1;
+            currentData.push({ id: newId, name: "Nueva Lengua", region: "Centro", family: "", group: "", variant: "", state: "", coords: [23.6345, -102.5528], audioUrl: "", mediaType: "external", mediaUrl: "", desc: "" });
+            saveData(); renderTable(); openEditModal(newId);
+        }
+
+        function deleteEntry(id) {
+            const item = currentData.find(l => l.id === id);
+            if (item && confirm(`¿Eliminar "${item.name}"?`)) {
+                currentData = currentData.filter(l => l.id !== id);
+                saveData(); renderTable(); applyFilters();
+            }
+        }
+
+        document.getElementById('editModal').addEventListener('click', (e) => { if (e.target === document.getElementById('editModal')) closeEditModal(); });
+        document.getElementById('textsModal').addEventListener('click', (e) => { if (e.target === document.getElementById('textsModal')) closeTextsModal(); });
+    </script>
+</body>
+
+</html>
+
